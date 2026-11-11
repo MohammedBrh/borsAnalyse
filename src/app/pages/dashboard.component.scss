@@ -1,0 +1,25 @@
+.hero { display: grid; grid-template-columns: minmax(280px, 1.1fr) 2fr; gap: 1rem; margin-bottom: 1rem; }
+.masi { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem 1.5rem; border-top: 3px solid var(--brass); }
+.masi-head { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; }
+.masi-head h1 { margin: 0; font-size: 1rem; font-weight: 800; letter-spacing: .02em; }
+.masi-head .muted { font-size: .8rem; }
+.masi-value { font-size: clamp(2.2rem, 4vw, 3.2rem); font-weight: 800; letter-spacing: -.03em; margin: .4rem 0 .1rem; }
+.masi-change { font-size: 1.05rem; font-weight: 600; }
+.facts { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.facts > div { display: flex; flex-direction: column; gap: .2rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); }
+.facts > div:nth-child(odd) { border-right: 1px solid var(--line); }
+.facts > div:nth-last-child(-n+2) { border-bottom: 0; }
+.k { color: var(--muted); font-size: .8rem; }
+.v { font-size: 1.5rem; font-weight: 700; }
+.s { color: var(--muted); font-size: .75rem; }
+.bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--line); margin: .35rem 0; }
+.bar .a { background: var(--up); } .bar .d { background: var(--down); } .bar .u { background: var(--muted); opacity: .5; }
+.up { color: var(--up); } .down { color: var(--down); }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
+.grid2 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.small { font-size: .78rem; margin: 0 0 .5rem; }
+.row-head { display: flex; justify-content: space-between; align-items: baseline; }
+.link { color: var(--brass); font-size: .85rem; font-weight: 600; text-decoration: none; }
+.scroll { max-height: 400px; overflow: auto; }
+@media (max-width: 1100px) { .hero, .grid2 { grid-template-columns: 1fr; } .grid3 { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .facts { grid-template-columns: 1fr; } .facts > div { border-right: 0 !important; border-bottom: 1px solid var(--line) !important; } }

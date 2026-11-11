@@ -1,0 +1,48 @@
+<app-state [loading]="ov().loading && !ov().value" [error]="providerError()" />
+@if (staleNote()) { <app-state [error]="staleNote()" title="Showing older data" /> }
+
+<section class="hero">
+  <div class="masi">
+    <div class="masi-head"><h1>MASI</h1><span class="muted">Moroccan All Shares Index</span>
+      @if (ov().value?.indexStatus; as st) { <app-quality [q]="st.quality" /> }</div>
+    @if (idx(); as i) {
+      <div class="masi-value num">{{ i.value | num }}</div>
+      <div class="masi-change"><app-change [abs]="i.change" [pct]="i.changePercent" /> <span class="muted ml-1">today</span></div>
+      <app-range-bar [low]="i.low" [high]="i.high" [open]="i.open" [current]="i.value" />
+    } @else if (!ov().loading) { <p class="muted">MASI value not available.</p> }
+  </div>
+
+  <div class="facts">
+    <div><span class="k">Market cap</span><span class="v num">{{ data()?.totalMarketCap | compact }}</span><span class="s">MAD, {{ data()?.coverage?.stocks ?? 0 }} stocks covered</span></div>
+    <div><span class="k">Traded value</span><span class="v num">{{ data()?.totalTurnover | compact }}</span><span class="s">MAD, estimated as price × volume</span></div>
+    <div><span class="k">Volume</span><span class="v num">{{ data()?.totalVolume | compact }}</span><span class="s">shares</span></div>
+    @if (breadth(); as b) {
+      <div class="breadth"><span class="k">Breadth</span>
+        <div class="bar" role="img" [attr.aria-label]="b.advancers + ' up, ' + b.decliners + ' down, ' + b.unchanged + ' unchanged'">
+          <span class="a" [style.width.%]="b.a"></span><span class="u" [style.width.%]="b.u"></span><span class="d" [style.width.%]="b.d"></span></div>
+        <span class="s"><b class="up">{{ b.advancers }} up</b>, <b class="down">{{ b.decliners }} down</b>, {{ b.unchanged }} unchanged</span></div>
+    }
+  </div>
+</section>
+
+<section class="grid3">
+  <div class="panel"><h2>Top gainers</h2><app-movers [stocks]="data()?.topGainers ?? []" empty="No stock is up in this session." /></div>
+  <div class="panel"><h2>Top losers</h2><app-movers [stocks]="data()?.topLosers ?? []" empty="No stock is down in this session." /></div>
+  <div class="panel"><h2>Most active</h2><app-movers [stocks]="data()?.mostActive ?? []" show="turnover" /></div>
+</section>
+
+<section class="grid2">
+  <div class="panel">
+    <h2>Sector performance</h2>
+    <p class="muted small">Market-cap-weighted change of the covered stocks in each sector, computed by this app. These are not official BVC sector indices.</p>
+    @if (sectorChart(); as opt) { <app-echart [options]="opt" height="360px" label="Sector performance bar chart" /> }
+    @else { <p class="muted">No sector data yet.</p> }
+  </div>
+  <div class="panel">
+    <div class="row-head"><h2 class="panel-title">All covered stocks</h2><a routerLink="/stocks" class="link">Open explorer</a></div>
+    <div class="scroll"><app-movers [stocks]="byCap()" show="marketCap" /></div>
+  </div>
+</section>
+
+<app-source-note [s]="ov().value" />
+@if (data()) { <p class="muted small">{{ data()!.coverage.note }}</p> }

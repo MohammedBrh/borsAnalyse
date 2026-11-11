@@ -1,0 +1,41 @@
+<mat-sidenav-container class="h-full">
+  <mat-sidenav #drawer [mode]="mobile() ? 'over' : 'side'" [opened]="!mobile()" class="side">
+    <a routerLink="/dashboard" class="brand" aria-label="BVC Desk home">
+      <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
+        <path d="M16 2l3.6 8.4L28 7l-3.4 8.6L32 16l-7.4 0.4L28 25l-8.4-3.4L16 30l-3.6-8.4L4 25l3.4-8.6L0 16l7.4-.4L4 7l8.4 3.4z" fill="var(--brass)"/>
+        <circle cx="16" cy="16" r="5" fill="var(--ink)"/>
+      </svg>
+      <span>BVC Desk</span>
+    </a>
+    <mat-nav-list>
+      @for (n of nav; track n.path) {
+        <a mat-list-item [routerLink]="n.path" routerLinkActive="active" (click)="mobile() && drawer.close()">
+          <mat-icon matListItemIcon>{{ n.icon }}</mat-icon><span matListItemTitle>{{ n.label }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content">
+    <header class="top">
+      @if (mobile()) { <button mat-icon-button (click)="drawer.toggle()" aria-label="Open navigation"><mat-icon>menu</mat-icon></button> }
+      <div class="status">
+        <span class="phase" [class.open]="status()?.marketPhase === 'OPEN'">{{ phaseText() }}</span>
+        <span class="hours">Casablanca Stock Exchange, 09:30–15:30 Morocco time</span>
+      </div>
+      <span class="grow"></span>
+      @if (status(); as s) { <app-quality [q]="s.quality" /> }
+      <button mat-icon-button (click)="theme.toggle()" [matTooltip]="theme.dark() ? 'Light theme' : 'Dark theme'" [attr.aria-label]="theme.dark() ? 'Switch to light theme' : 'Switch to dark theme'">
+        <mat-icon>{{ theme.dark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+    </header>
+
+    <main class="main"><router-outlet /></main>
+
+    <footer class="foot">
+      <span>Data: {{ status()?.source ?? 'Oanor Casablanca Stock Exchange API' }}</span>
+      <span>Last update: {{ status()?.fetchedAt ? (status()!.fetchedAt | date: 'medium') : '—' }}</span>
+      <span>Prices in MAD. Not investment advice.</span>
+    </footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>

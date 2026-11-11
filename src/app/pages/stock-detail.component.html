@@ -1,0 +1,92 @@
+<a routerLink="/stocks" class="back"><mat-icon>arrow_back</mat-icon>Stocks</a>
+<app-state [loading]="stock().loading && !stock().value" [error]="error()" title="This stock could not be loaded" />
+
+@if (s(); as s) {
+<header class="head">
+  <div>
+    <h1 class="page-title">{{ s.symbol }} <span class="muted name">{{ s.name ?? '' }}</span></h1>
+    <p class="muted meta">{{ s.sector ?? 'Sector not provided' }}</p>
+  </div>
+  <div class="actions">
+    <app-quality [q]="stock().value!.quality" />
+    <button mat-stroked-button (click)="watch.toggle(s.symbol, s.price)">
+      <mat-icon>{{ watch.has(s.symbol) ? 'star' : 'star_border' }}</mat-icon>{{ watch.has(s.symbol) ? 'In watchlist' : 'Add to watchlist' }}
+    </button>
+  </div>
+</header>
+
+<section class="top">
+  <div class="panel quote">
+    <div class="price num">{{ s.price | num }} <small>MAD</small></div>
+    <div class="chg"><app-change [abs]="s.change" [pct]="s.changePercent" /> <span class="muted ml-1">vs previous close</span></div>
+    <app-range-bar [low]="s.low" [high]="s.high" [open]="s.open" [current]="s.price" />
+    <dl class="stats">
+      <div><dt>Open</dt><dd class="num">{{ s.open | num }}</dd></div>
+      <div><dt>High</dt><dd class="num">{{ s.high | num }}</dd></div>
+      <div><dt>Low</dt><dd class="num">{{ s.low | num }}</dd></div>
+      <div><dt>Previous close</dt><dd class="num">{{ s.previousClose | num }}</dd></div>
+      <div><dt>Volume</dt><dd class="num">{{ s.volume | num: 0 }}</dd></div>
+      <div><dt>Traded value</dt><dd class="num">{{ s.turnover | compact }}</dd></div>
+      <div><dt>Market cap</dt><dd class="num">{{ s.marketCap | compact }}</dd></div>
+      <div><dt>P/E</dt><dd class="num">{{ s.peRatio | num }}</dd></div>
+    </dl>
+  </div>
+
+  <!-- Support & resistance: the core of this page -->
+  <div class="panel levels">
+    <div class="lv-head">
+      <h2>Support and resistance</h2>
+      <mat-button-toggle-group [value]="method()" (change)="method.set($event.value)" hideSingleSelectionIndicator aria-label="Calculation method">
+        <mat-button-toggle value="classic">Classic</mat-button-toggle>
+        <mat-button-toggle value="fibonacci">Fibonacci</mat-button-toggle>
+        <mat-button-toggle value="intraday">Today</mat-button-toggle>
+        <mat-button-toggle value="swing">Swing</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    @if (summary(); as sm) {
+      <div class="nearest">
+        <div class="res"><span>Nearest resistance (top)</span><strong>{{ sm.res }}</strong></div>
+        <div class="sup"><span>Nearest support (bottom)</span><strong>{{ sm.sup }}</strong></div>
+      </div>
+    }
+    <p class="muted help">{{ methodHelp[method()] }}</p>
+
+    <ol class="ladder" aria-label="Price levels from highest to lowest">
+      @for (r of ladder(); track $index) {
+        @if (r.type === 'price') {
+          <li class="row now"><span class="lbl">Current price</span><span class="bar"></span><span class="px num">{{ r.price | num }}</span><span class="dist"></span></li>
+        } @else {
+          <li class="row" [class.res]="r.level.kind === 'resistance'" [class.sup]="r.level.kind === 'support'" [class.piv]="r.level.kind === 'pivot'">
+            <span class="lbl">{{ r.level.label }}</span>
+            <span class="bar"><i [style.width.%]="barWidth(r.level)"></i></span>
+            <span class="px num">{{ r.level.price | num }}</span>
+            <span class="dist num">{{ r.level.distancePercent | pct }}</span>
+          </li>
+        }
+      } @empty {
+        <li class="muted empty">{{ lv().loading ? 'Computing levels…' : 'Not enough data for this method yet.' }}</li>
+      }
+    </ol>
+
+    @if (L(); as l) {
+      @if (l.basis) {
+        <p class="basis muted">Based on session {{ l.basis.date }}: high {{ l.basis.high | num }}, low {{ l.basis.low | num }}, close {{ l.basis.close | num }}
+          @if (l.basis.session === 'current-provisional') { <b class="warn">(provisional, session still open)</b> }</p>
+      }
+      <ul class="notes">@for (n of l.notes; track n) { <li>{{ n }}</li> }</ul>
+    }
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Daily history recorded by this app</h2>
+  @if (chart(); as opt) {
+    <app-echart [options]="opt" height="340px" [label]="s.symbol + ' daily candlestick chart'" />
+  } @else {
+    <p class="muted small">No price history to chart yet. The free provider does not offer historical prices, so the backend records one daily bar per session from the moment you start it. The chart appears after two sessions; swing levels after ten.</p>
+  }
+  @if (hist().value; as h) { <p class="muted small">{{ h.bars.length }} session(s) recorded.</p> }
+</section>
+<app-source-note [s]="stock().value" />
+}

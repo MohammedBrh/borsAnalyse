@@ -1,0 +1,69 @@
+@use '@angular/material' as mat;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  @include mat.theme((
+    color: (primary: mat.$orange-palette, tertiary: mat.$cyan-palette, theme-type: color-scheme),
+    typography: (plain-family: 'Manrope, system-ui, sans-serif', brand-family: 'Manrope, system-ui, sans-serif'),
+    density: 0,
+  ));
+}
+
+/* Atlas night (dark, default) */
+html.theme-dark {
+  color-scheme: dark;
+  --ink: #0f1d26;      /* page */
+  --surface: #152733;  /* panels */
+  --raised: #1c3341;   /* hover / raised */
+  --line: #24404f;
+  --text: #e6edf0;
+  --muted: #8ba3ae;
+  --brass: #e3a33b;    /* saffron accent */
+  --sky: #6cb6d9;
+  --up: #2fb67c;
+  --down: #e5534b;
+}
+/* Daylight */
+html.theme-light {
+  color-scheme: light;
+  --ink: #f3f6f7;
+  --surface: #ffffff;
+  --raised: #eef3f5;
+  --line: #d6e0e5;
+  --text: #13232e;
+  --muted: #5b707b;
+  --brass: #a8680c;
+  --sky: #1f6f99;
+  --up: #11855a;
+  --down: #c7352d;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Manrope, system-ui, sans-serif; background: var(--ink); color: var(--text); -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.num { font-variant-numeric: tabular-nums; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.25rem; }
+.panel > h2, .panel-title { margin: 0 0 .75rem; font-size: .95rem; font-weight: 700; color: var(--text); }
+.page-title { margin: 0 0 .25rem; font-size: 1.6rem; font-weight: 800; letter-spacing: -.02em; }
+.page-sub { margin: 0 0 1.25rem; color: var(--muted); font-size: .9rem; max-width: 70ch; }
+.muted { color: var(--muted); }
+
+/* compact financial tables */
+table.fin { width: 100%; border-collapse: collapse; font-size: .875rem; }
+table.fin th { text-align: left; font-weight: 600; color: var(--muted); font-size: .78rem; padding: .45rem .5rem; border-bottom: 1px solid var(--line); }
+table.fin td { padding: .5rem; border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent); font-variant-numeric: tabular-nums; }
+table.fin td.r, table.fin th.r { text-align: right; }
+table.fin tr.link { cursor: pointer; }
+table.fin tr.link:hover td { background: var(--raised); }
+.tbl-wrap { overflow-x: auto; }
+
+/* Material table on our surfaces */
+.mat-mdc-table { background: transparent !important; }
+.mat-mdc-row:hover .mat-mdc-cell { background: var(--raised); }
+.mat-mdc-cell, .mat-mdc-header-cell { border-bottom-color: var(--line) !important; font-variant-numeric: tabular-nums; }
+.mat-mdc-paginator { background: transparent !important; }
